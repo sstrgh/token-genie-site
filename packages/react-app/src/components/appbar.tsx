@@ -27,21 +27,42 @@ function WalletButton() {
         console.error("Error while connecting wallet:", error.message);
       }
     }, [error]);
-  
-    return (
-      <Button
-        onClick={() => {
-          if (!account) {
-            activateBrowserWallet();
-          } else {
-            deactivate();
-          }
-        }}
-      >
-        {rendered === "" && "Connect Wallet"}
-        {rendered !== "" && rendered}
-      </Button>
-    );
+
+    if (rendered !== "") {
+        return (
+            <div>
+              <Button>Challenges</Button>
+              <Button>Prizes</Button>
+              <Button
+                  onClick={() => {
+                  if (!account) {
+                      activateBrowserWallet();
+                  } else {
+                      deactivate();
+                  }
+                  }}
+              >
+                  {rendered}
+              </Button>
+            </div>  
+          );
+    } else {
+        return (
+            <div>
+              <Button
+                  onClick={() => {
+                  if (!account) {
+                      activateBrowserWallet();
+                  } else {
+                      deactivate();
+                  }
+                  }}
+              >
+                  Connect Wallet
+              </Button>
+            </div>  
+          );
+    }
   }
 
 export default function TKAppBar() {
@@ -52,7 +73,7 @@ export default function TKAppBar() {
           <img  src="logo.png" alt="logo"/>
           <Typography variant="h4" component="div" sx={{ color: 'secondary.main', fontWeight: 'bold', m:2, flexGrow: 1 }}>
             Token Genie
-          </Typography>
+          </Typography>          
           <WalletButton />
         </Toolbar>
       </AppBar>
