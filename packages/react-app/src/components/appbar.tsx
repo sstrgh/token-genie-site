@@ -1,15 +1,59 @@
 import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
+import { Box } from '@mui/system';
+import { shortenAddress, useEthers, useLookupAddress } from "@usedapp/core";
+import Typography from '@mui/material/Typography';
+import { useEffect, useState } from "react";
+import { Button} from "../components";
 
-export default function ButtonAppBar() {
+function WalletButton() {
+    const [rendered, setRendered] = useState("");
+  
+    const ens = useLookupAddress();
+    const { account, activateBrowserWallet, deactivate, error } = useEthers();
+  
+    useEffect(() => {
+      if (ens) {
+        setRendered(ens);
+      } else if (account) {
+        setRendered(shortenAddress(account));
+      } else {
+        setRendered("");
+      }
+    }, [account, ens, setRendered]);
+  
+    useEffect(() => {
+      if (error) {
+        console.error("Error while connecting wallet:", error.message);
+      }
+    }, [error]);
+  
+    return (
+      <Button
+        onClick={() => {
+          if (!account) {
+            activateBrowserWallet();
+          } else {
+            deactivate();
+          }
+        }}
+      >
+        {rendered === "" && "Connect Wallet"}
+        {rendered !== "" && rendered}
+      </Button>
+    );
+  }
+
+export default function TKAppBar() {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="static" sx={{ bgcolor: '#eca8d7' }}>
         <Toolbar sx={{ justifyContent: "space-between" }}>
-          <img src="logo.png" alt="logo"/>
-          <Button color="inherit">Login</Button>
+          <img  src="logo.png" alt="logo"/>
+          <Typography variant="h4" component="div" sx={{ color: 'secondary.main', fontWeight: 'bold', m:2, flexGrow: 1 }}>
+            Token Genie
+          </Typography>
+          <WalletButton />
         </Toolbar>
       </AppBar>
     </Box>
