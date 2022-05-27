@@ -6,7 +6,6 @@ import { shortenAddress, useEthers, useLookupAddress } from "@usedapp/core";
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from "react";
 import { Button} from "../components";
-import { Item } from '../components/Item'
 
 
 function WalletButton(props: {challenges: any, setChallenges: any, prizes: any, setPrizes:any}) {
