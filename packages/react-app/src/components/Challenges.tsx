@@ -13,7 +13,7 @@ import { StartSharp } from "@mui/icons-material";
 export const Challenges = () => {
   const { account, activateBrowserWallet, deactivate, error } = useEthers();
   const [challengeData, setChallengeData] = useState<any[]>([]);
-  const [readData, setReadData] = useState(false);
+  const [participatingChallengeData, setParticipatingChallengeData] = useState<any[]>([]);
 
   const contractAddress = "0xE0fbFD3110bB285eF6F38982EEF15E825Ad3d629";
   const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -23,7 +23,6 @@ export const Challenges = () => {
   useEffect(() => {
     async function getMyChallenges(account: any) {
       const myChallenges = await contract.getMyChallenges(account);
-      if (readData == false) {
       let length = myChallenges.length;
       for (let i = 0; i < length; i++) {
           let id = ethers.BigNumber.from(myChallenges[i]).toNumber();
@@ -34,8 +33,6 @@ export const Challenges = () => {
               let stars = ethers.BigNumber.from(response[3]).toNumber(); 
               addChallenge(id, stars, description);
           })
-          setReadData(true);
-        }
       }
     }
 
@@ -51,7 +48,37 @@ export const Challenges = () => {
   
     getMyChallenges(account);
    },[])
-   
+
+   useEffect(() => {
+        function addParticipatingChallenge(id: any, stars: any, description: any) {
+            let obj = {
+                "id": id,
+                "stars": stars,
+                "description": description
+            }
+            setParticipatingChallengeData(participatingChallengeData => [...participatingChallengeData, obj]);
+        }
+
+       async function getMyParticipatingChallenges(account: any) {
+        const participatingChallengeData = await contract.getParticipatingChallenges(account);
+        let length = participatingChallengeData.length;
+        for (let i = 0; i < length; i++) {
+            let id = ethers.BigNumber.from(participatingChallengeData[i]).toNumber();
+            const challenge = contract.getChallenge(id, account);
+            challenge.then(function(response: any){
+                let id = response[0];
+                let description = response[2];
+                let stars = ethers.BigNumber.from(response[3]).toNumber(); 
+                addParticipatingChallenge(id, stars, description);
+            })
+        }
+       }
+       getMyParticipatingChallenges(account);
+   }, []);
+
+   console.log(participatingChallengeData);
+
+
   const setHandler = (event: any) => {
     event.preventDefault();
     contract.createChallenge(event.target.stars.value, event.target.description.value);
@@ -111,9 +138,13 @@ export const Challenges = () => {
         </Grid>
         <Grid item xs={8}>
           <h1>Challenges You Can Complete</h1>
-          <Item>Participated Challenge 1</Item>
-          <Item>Participated Challenge 2</Item>
-          <Item>Participated Challenge 3</Item>
+          {participatingChallengeData.map((item: any)=> {
+            let id = ethers.BigNumber.from(item["id"]).toNumber();
+            let description = item["description"];
+            let stars = item["stars"]
+            return (<Item> 
+                <h2> Challenge {id}</h2> <p> {description}</p> <p>Stars to Earn: {stars}</p></Item>);
+          })}
         </Grid>
       </Grid>
     </Box>
