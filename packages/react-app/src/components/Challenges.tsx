@@ -6,19 +6,52 @@ import { Button } from "../components";
 import TextField from "@mui/material/TextField";
 import { ethers } from "ethers";
 import challenges from "../challenges.json";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { shortenAddress, useEthers, useLookupAddress } from "@usedapp/core";
+import { StartSharp } from "@mui/icons-material";
 
 export const Challenges = () => {
+  const { account, activateBrowserWallet, deactivate, error } = useEthers();
+  const [challengeData, setChallengeData] = useState<any[]>([]);
+  const [readData, setReadData] = useState(false);
+
   const contractAddress = "0xE0fbFD3110bB285eF6F38982EEF15E825Ad3d629";
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const contract = new ethers.Contract(contractAddress, challenges.abi, signer);
 
-  const [challengeData, setChallengeData] = useState({
-    stars: "",
-    description: "",
-  });
+  useEffect(() => {
+    async function getMyChallenges(account: any) {
+      const myChallenges = await contract.getMyChallenges(account);
+      if (readData == false) {
+      let length = myChallenges.length;
+      for (let i = 0; i < length; i++) {
+          let id = ethers.BigNumber.from(myChallenges[i]).toNumber();
+          const challenge = contract.getChallenge(id, account);
+          challenge.then(function(response: any){
+              let id = response[0];
+              let description = response[2];
+              let stars = ethers.BigNumber.from(response[3]).toNumber(); 
+              addChallenge(id, stars, description);
+          })
+          setReadData(true);
+        }
+      }
+    }
 
+  
+    function addChallenge(id: any, stars: any, description: any) {
+        let obj = {
+            "id": id,
+            "stars": stars,
+            "description": description
+        }
+        setChallengeData(challengeData => [...challengeData, obj]);
+    }
+  
+    getMyChallenges(account);
+   },[])
+   
   const setHandler = (event: any) => {
     event.preventDefault();
     contract.createChallenge(event.target.stars.value, event.target.description.value);
@@ -29,9 +62,13 @@ export const Challenges = () => {
       <Grid container spacing={2}>
         <Grid item xs={8}>
           <h1>Challenges You Have Created</h1>
-          <Item>My Challenge 1</Item>
-          <Item>My Challenge 2</Item>
-          <Item>My Challenge 3</Item>
+          {challengeData.map((item: any)=> {
+            let id = ethers.BigNumber.from(item["id"]).toNumber();
+            let description = item["description"];
+            let stars = item["stars"]
+            return (<Item> 
+                <h2> Challenge {id}</h2> <p> {description}</p> <p>Stars to Earn: {stars}</p></Item>);
+          })}
         </Grid>
         <Grid item sx={{ mt: 5 }} xs={4}>
           <div>
