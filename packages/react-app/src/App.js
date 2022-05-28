@@ -20,10 +20,10 @@ function App() {
   // Pick depending on the show
   // Should pass the relevant details to render an item
   let show;
-  if (challenges == true && prizes == false) {
+  if (challenges === true && prizes === false) {
     show = <Challenges/>;
     console.log(show);
-  } else if (prizes == true && challenges == false) {
+  } else if (prizes === true && challenges === false) {
     show = <Prizes/>;
     console.log(show);
   }

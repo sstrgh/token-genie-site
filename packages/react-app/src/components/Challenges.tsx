@@ -1,11 +1,10 @@
-import { Stack } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import { Item } from '../components/Item';
 import { Button} from "../components";
 import TextField from '@mui/material/TextField';
 
-export const Challenges = () => {
+export const Challenges = () => { 
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={2}>

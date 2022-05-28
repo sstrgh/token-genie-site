@@ -1,23 +1,29 @@
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import { Box } from '@mui/system';
-import { Stack } from '@mui/material';
 import { shortenAddress, useEthers, useLookupAddress } from "@usedapp/core";
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from "react";
 import { Button} from "../components";
-
+import { ReactChild, ReactFragment, ReactPortal, useEffect, useState } from "react";
+import { ethers, providers, } from 'ethers';
+import challenges from '../challenges.json';
 
 function WalletButton(props: {challenges: any, setChallenges: any, prizes: any, setPrizes:any}) {
     const [rendered, setRendered] = useState("");
     const ens = useLookupAddress();
     const { account, activateBrowserWallet, deactivate, error } = useEthers();
-  
+    const [challengeList, setChallengeList] = useState(null);
+
     useEffect(() => {
       if (ens) {
         setRendered(ens);
       } else if (account) {
         setRendered(shortenAddress(account));
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const challengesContract  = new ethers.Contract("0xa6CCd393b602A01BE459BCCCAF61c718BeE0027F", challenges.abi, provider);
+        const listOfChallenges = challengesContract.getChallenge(0);
+        setChallengeList(listOfChallenges);
+        console.log(challengeList)
       } else {
         setRendered("");
       }
