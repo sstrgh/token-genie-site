@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import { Item } from '../components/Item';
 import { Button} from "../components";
+import TextField from '@mui/material/TextField';
 
 export const Challenges = () => {
     return (
@@ -15,7 +16,18 @@ export const Challenges = () => {
                 <Item>My Challenge 3</Item>
             </Grid>
             <Grid item sx={{mt: 5}} xs={4}>
-                <Button >Create a new challenge</Button>
+                <div>
+                <TextField
+                required
+                color="success"
+                id="outlined-required"
+                label="Stars for the Challenge "
+                defaultValue="Stars Token"
+                />
+                <Button onClick={() => {
+                    // Send a transaction to the chain 
+                }}>Create a new challenge</Button>
+                </div>
             </Grid>
             <Grid item xs={8}>
                 <h1>Challenges You Can Complete</h1> 
