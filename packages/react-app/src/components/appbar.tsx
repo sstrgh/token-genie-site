@@ -1,14 +1,15 @@
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import { Box } from '@mui/system';
+import { Stack } from '@mui/material';
 import { shortenAddress, useEthers, useLookupAddress } from "@usedapp/core";
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from "react";
 import { Button} from "../components";
 
-function WalletButton() {
+
+function WalletButton(props: {challenges: any, setChallenges: any, prizes: any, setPrizes:any}) {
     const [rendered, setRendered] = useState("");
-  
     const ens = useLookupAddress();
     const { account, activateBrowserWallet, deactivate, error } = useEthers();
   
@@ -31,20 +32,30 @@ function WalletButton() {
     if (rendered !== "") {
         return (
             <div>
-              <Button>Challenges</Button>
-              <Button>Prizes</Button>
+              <Button onClick={() => {
+                // Show challenges for this account
+                props.setChallenges(true);
+                props.setPrizes(false);
+              }
+              }>Challenges</Button>
+              <Button onClick={() => {
+                // Show prizes for that account
+                props.setChallenges(false);
+                props.setPrizes(true);
+              }}> Prizes</Button>
               <Button
                   onClick={() => {
                   if (!account) {
                       activateBrowserWallet();
                   } else {
+                      props.setChallenges(false);
+                      props.setPrizes(false);
                       deactivate();
                   }
-                  }}
-              >
+                  }}>
                   {rendered}
               </Button>
-            </div>  
+            </div>
           );
     } else {
         return (
@@ -55,6 +66,8 @@ function WalletButton() {
                       activateBrowserWallet();
                   } else {
                       deactivate();
+                      props.setChallenges(true);
+                      props.setPrizes(true);
                   }
                   }}
               >
@@ -65,7 +78,7 @@ function WalletButton() {
     }
   }
 
-export default function TKAppBar() {
+export default function TKAppBar({challenges, setChallenges, prizes, setPrizes}: any) {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{ bgcolor: '#eca8d7' }}>
@@ -74,7 +87,7 @@ export default function TKAppBar() {
           <Typography variant="h4" component="div" sx={{ color: 'secondary.main', fontWeight: 'bold', m:2, flexGrow: 1 }}>
             Token Genie
           </Typography>          
-          <WalletButton />
+          <WalletButton challenges={challenges} setChallenges={setChallenges} prizes={prizes} setPrizes={setPrizes}/>
         </Toolbar>
       </AppBar>
     </Box>
