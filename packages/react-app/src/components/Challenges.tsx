@@ -53,7 +53,7 @@ export const Challenges = () => {
     }
 
     getMyChallenges(account);
-  }, [account, challengeData]);
+  }, []);
 
   useEffect(() => {
     function addParticipatingChallenge(id: any, stars: any, description: any) {
@@ -91,7 +91,7 @@ export const Challenges = () => {
       }
     }
     getMyParticipatingChallenges(account);
-  }, [account,contract]);
+  }, []);
 
   const setHandler = (event: any) => {
     event.preventDefault();
@@ -149,7 +149,7 @@ export const Challenges = () => {
             let description = item["description"];
             let stars = item["stars"];
             return (
-              <Item>
+              <Item key={id}>
                 <h2> Challenge {id}</h2> <p> {description}</p>{" "}
                 <p>Stars to Earn: {stars}</p>
               </Item>
@@ -165,7 +165,7 @@ export const Challenges = () => {
             let description = item["description"];
             let stars = item["stars"];
             return (
-              <Item>
+              <Item key={id}>
                 <h2> Challenge {id}</h2> <p> {description}</p>{" "}
                 <p>Stars to Earn: {stars}</p>
               </Item>
