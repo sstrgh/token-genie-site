@@ -1,6 +1,5 @@
-import { Stack, TextareaAutosize } from "@mui/material";
+import { Stack, TextareaAutosize, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
 import { Item } from "../components/Item";
 import { Button } from "../components";
 import TextField from "@mui/material/TextField";
@@ -13,7 +12,9 @@ import { StartSharp } from "@mui/icons-material";
 export const Challenges = () => {
   const { account, activateBrowserWallet, deactivate, error } = useEthers();
   const [challengeData, setChallengeData] = useState<any[]>([]);
-  const [participatingChallengeData, setParticipatingChallengeData] = useState<any[]>([]);
+  const [participatingChallengeData, setParticipatingChallengeData] = useState<
+    any[]
+  >([]);
 
   const contractAddress = "0xE0fbFD3110bB285eF6F38982EEF15E825Ad3d629";
   const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -25,128 +26,227 @@ export const Challenges = () => {
       const myChallenges = await contract.getMyChallenges(account);
       let length = myChallenges.length;
       for (let i = 0; i < length; i++) {
-          let id = ethers.BigNumber.from(myChallenges[i]).toNumber();
-          const challenge = contract.getChallenge(id, account);
-          challenge.then(function(response: any){
-              let id = response[0];
-              let description = response[2];
-              let stars = ethers.BigNumber.from(response[3]).toNumber(); 
-              addChallenge(id, stars, description);
-          })
+        let id = ethers.BigNumber.from(myChallenges[i]).toNumber();
+
+        // Clears List and recreates it
+        if (challengeData.length !== 0) {
+          setChallengeData([]);
+        }
+
+        const challenge = contract.getChallenge(id, account);
+        challenge.then(function(response: any) {
+          let id = response[0];
+          let description = response[2];
+          let stars = ethers.BigNumber.from(response[3]).toNumber();
+          addChallenge(id, stars, description);
+        });
       }
     }
 
-  
     function addChallenge(id: any, stars: any, description: any) {
-        let obj = {
-            "id": id,
-            "stars": stars,
-            "description": description
-        }
-        setChallengeData(challengeData => [...challengeData, obj]);
+      let obj = {
+        id: id,
+        stars: stars,
+        description: description,
+      };
+      setChallengeData((challengeData) => [...challengeData, obj]);
     }
-  
+
     getMyChallenges(account);
-   },[])
+  }, []);
 
-   useEffect(() => {
-        function addParticipatingChallenge(id: any, stars: any, description: any) {
-            let obj = {
-                "id": id,
-                "stars": stars,
-                "description": description
-            }
-            setParticipatingChallengeData(participatingChallengeData => [...participatingChallengeData, obj]);
-        }
+  useEffect(() => {
+    function addParticipatingChallenge(id: any, stars: any, description: any) {
+      let obj = {
+        id: id,
+        stars: stars,
+        description: description,
+      };
+      setParticipatingChallengeData((participatingChallengeData) => [
+        ...participatingChallengeData,
+        obj,
+      ]);
+    }
 
-       async function getMyParticipatingChallenges(account: any) {
-        const participatingChallengeData = await contract.getParticipatingChallenges(account);
-        let length = participatingChallengeData.length;
-        for (let i = 0; i < length; i++) {
-            let id = ethers.BigNumber.from(participatingChallengeData[i]).toNumber();
-            const challenge = contract.getChallenge(id, account);
-            challenge.then(function(response: any){
-                let id = response[0];
-                let description = response[2];
-                let stars = ethers.BigNumber.from(response[3]).toNumber(); 
-                addParticipatingChallenge(id, stars, description);
-            })
-        }
-       }
-       getMyParticipatingChallenges(account);
-   }, []);
+    async function getMyParticipatingChallenges(account: any) {
+      const participatingChallengeData = await contract.getParticipatingChallenges(
+        account
+      );
+      // Clears List and recreates it
+      if (participatingChallengeData.length !== 0) {
+        setParticipatingChallengeData([]);
+      }
+      let length = participatingChallengeData.length;
+      for (let i = 0; i < length; i++) {
+        let id = ethers.BigNumber.from(
+          participatingChallengeData[i]
+        ).toNumber();
+        const challenge = contract.getChallenge(id, account);
+        challenge.then(function(response: any) {
+          let id = response[0];
+          let description = response[2];
+          let stars = ethers.BigNumber.from(response[3]).toNumber();
+          addParticipatingChallenge(id, stars, description);
+        });
+      }
+    }
+    getMyParticipatingChallenges(account);
+  }, []);
 
-   console.log(participatingChallengeData);
-
+  console.log(participatingChallengeData);
 
   const setHandler = (event: any) => {
     event.preventDefault();
-    contract.createChallenge(event.target.stars.value, event.target.description.value);
+    contract.createChallenge(
+      event.target.stars.value,
+      event.target.description.value
+    );
+  };
+
+  const setAddParticipantsHandler = (event: any) => {
+    event.preventDefault();
+    contract.approveUser(
+      event.target.participantAddress.value,
+      event.target.challengeId.value
+    );
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={8}>
-          <h1>Challenges You Have Created</h1>
-          {challengeData.map((item: any)=> {
+    <Grid container>
+      <Grid container spacing={2} margin={1}>
+        <Grid item xs={6}>
+          <Typography variant="h3" component="h2" color={"hotpink"}>
+            Challenges You Have Created
+          </Typography>
+          {challengeData.map((item: any) => {
             let id = ethers.BigNumber.from(item["id"]).toNumber();
             let description = item["description"];
-            let stars = item["stars"]
-            return (<Item> 
-                <h2> Challenge {id}</h2> <p> {description}</p> <p>Stars to Earn: {stars}</p></Item>);
+            let stars = item["stars"];
+            return (
+              <Item>
+                <h2> Challenge {id}</h2> <p> {description}</p>{" "}
+                <p>Stars to Earn: {stars}</p>
+              </Item>
+            );
           })}
         </Grid>
-        <Grid item sx={{ mt: 5 }} xs={4}>
-          <div>
-            <form onSubmit={setHandler}>
+        <Grid item xs={6}>
+          <Typography variant="h3" component="h2" color={"hotpink"}>
+            Participating Challenges
+          </Typography>{" "}
+          {participatingChallengeData.map((item: any) => {
+            let id = ethers.BigNumber.from(item["id"]).toNumber();
+            let description = item["description"];
+            let stars = item["stars"];
+            return (
+              <Item>
+                <h2> Challenge {id}</h2> <p> {description}</p>{" "}
+                <p>Stars to Earn: {stars}</p>
+              </Item>
+            );
+          })}
+        </Grid>
+      </Grid>
+      <Grid
+        container
+        spacing={2}
+        margin={2}
+        padding={1}
+        sx={{ border: 3, borderColor: "primary.main" }}
+      >
+        <Grid item xs={12}>
+          <Typography variant="h3" component="h2" color={"hotpink"}>
+            Control Panel
+          </Typography>
+        </Grid>
+        <Grid mb={2} item>
+          <Typography variant="h5" component="h2" color={"hotpink"}>
+            Create New Challenge
+          </Typography>
+          <form onSubmit={setHandler}>
+            <Stack mt={1} spacing={2}>
               <TextField
+                inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                 style={{ width: "400px", margin: "5px" }}
                 sx={{
-                  "fieldset": {
+                  fieldset: {
                     borderColor: "hotpink",
                   },
                   bgcolor: "white",
                 }}
                 name="stars"
-                label="Stars To Be Awarded"
-                variant="outlined"
+                label="Stars To Be Awarded (Numbers Only)"
+                variant="filled"
               />
-
-              <br />
               <TextField
                 style={{ width: "400px", margin: "5px" }}
                 name="description"
                 type="text"
                 label="Challenge Description"
-                variant="outlined"
+                variant="filled"
                 multiline
                 rows={10}
                 sx={{
-                    "fieldset": {
-                      borderColor: "hotpink",
-                    },
-                    bgcolor: "white",
-                  }}
+                  fieldset: {
+                    borderColor: "hotpink",
+                  },
+                  bgcolor: "white",
+                }}
               />
-              <br />
-              <Button type={"submit"} variant="contained" color="primary">
+              <Button
+                style={{ width: "400px", margin: "5px" }}
+                type={"submit"}
+                variant="contained"
+                color="primary"
+              >
                 Submit
               </Button>
-            </form>
-          </div>
+            </Stack>
+          </form>
         </Grid>
-        <Grid item xs={8}>
-          <h1>Challenges You Can Complete</h1>
-          {participatingChallengeData.map((item: any)=> {
-            let id = ethers.BigNumber.from(item["id"]).toNumber();
-            let description = item["description"];
-            let stars = item["stars"]
-            return (<Item> 
-                <h2> Challenge {id}</h2> <p> {description}</p> <p>Stars to Earn: {stars}</p></Item>);
-          })}
+        <Grid item>
+          <Typography variant="h5" component="h2" color={"hotpink"}>
+            Add Approved Participants
+          </Typography>
+          <form onSubmit={setAddParticipantsHandler}>
+            <Stack mt={1} spacing={2}>
+              <TextField
+                style={{ width: "400px", margin: "5px" }}
+                sx={{
+                  fieldset: {
+                    borderColor: "hotpink",
+                  },
+                  bgcolor: "white",
+                }}
+                name="participantAddress"
+                label="Participant Wallet Address"
+                variant="filled"
+              />
+              <TextField
+                inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+                style={{ width: "400px", margin: "5px" }}
+                sx={{
+                  fieldset: {
+                    borderColor: "hotpink",
+                  },
+                  bgcolor: "white",
+                }}
+                name="challengeId"
+                label="Challenge ID"
+                variant="filled"
+              />
+              <Button
+                style={{ width: "400px", margin: "5px" }}
+                type={"submit"}
+                variant="contained"
+                color="primary"
+              >
+                Add Approved Participant
+              </Button>
+            </Stack>
+          </form>
         </Grid>
       </Grid>
-    </Box>
+    </Grid>
   );
 };

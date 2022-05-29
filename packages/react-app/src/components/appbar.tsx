@@ -6,7 +6,7 @@ import { shortenAddress, useEthers, useLookupAddress } from "@usedapp/core";
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from "react";
 import { Button} from "../components";
-
+import Grid from "@mui/material/Grid";
 
 function WalletButton(props: {challenges: any, setChallenges: any, prizes: any, setPrizes:any}) {
     const [rendered, setRendered] = useState("");
@@ -80,7 +80,7 @@ function WalletButton(props: {challenges: any, setChallenges: any, prizes: any, 
 
 export default function TKAppBar({challenges, setChallenges, prizes, setPrizes}: any) {
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Grid xs={12}> 
       <AppBar position="static" sx={{ bgcolor: '#eca8d7' }}>
         <Toolbar sx={{ justifyContent: "space-between" }}>
           <img  src="logo.png" alt="logo"/>
@@ -90,6 +90,6 @@ export default function TKAppBar({challenges, setChallenges, prizes, setPrizes}:
           <WalletButton challenges={challenges} setChallenges={setChallenges} prizes={prizes} setPrizes={setPrizes}/>
         </Toolbar>
       </AppBar>
-    </Box>
+    </Grid>
   );
 }
