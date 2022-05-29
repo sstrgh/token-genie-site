@@ -80,7 +80,7 @@ function WalletButton(props: {challenges: any, setChallenges: any, prizes: any, 
 
 export default function TKAppBar({challenges, setChallenges, prizes, setPrizes}: any) {
   return (
-    <Grid xs={12}> 
+    <Grid> 
       <AppBar position="static" sx={{ bgcolor: '#eca8d7' }}>
         <Toolbar sx={{ justifyContent: "space-between" }}>
           <img  src="logo.png" alt="logo"/>

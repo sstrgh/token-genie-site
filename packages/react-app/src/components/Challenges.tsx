@@ -93,22 +93,48 @@ export const Challenges = () => {
     getMyParticipatingChallenges(account);
   }, []);
 
-  console.log(participatingChallengeData);
-
   const setHandler = (event: any) => {
     event.preventDefault();
-    contract.createChallenge(
-      event.target.stars.value,
-      event.target.description.value
-    );
+    contract
+      .createChallenge(event.target.stars.value, event.target.description.value)
+      .catch((error: any) => {
+        console.error(error);
+      });
   };
 
   const setAddParticipantsHandler = (event: any) => {
     event.preventDefault();
-    contract.approveUser(
-      event.target.participantAddress.value,
-      event.target.challengeId.value
-    );
+    contract
+      .approveUser(
+        event.target.participantAddress.value,
+        event.target.challengeId.value
+      )
+      .catch((error: any) => {
+        console.error(error);
+      });
+  };
+
+  const [challengCompleteError, setChallengCompleteError] = useState(null);
+  const setChallengComplete = (event: any) => {
+    event.preventDefault();
+    contract
+      .challengeComplete(event.target.challengeId.value)
+      .catch((error: any) => {
+        setChallengCompleteError(error.reason);
+      });
+  };
+
+  const [approveChallengeError, setApproveChallengeError] = useState(null);
+  const approveChallenge = (event: any) => {
+    event.preventDefault();
+    contract
+      .approveChallengeComplete(
+        event.target.participantAddress.value,
+        event.target.challengeId.value
+      )
+      .catch((error: any) => {
+        setApproveChallengeError(error.reason);
+      });
   };
 
   return (
@@ -242,6 +268,82 @@ export const Challenges = () => {
                 color="primary"
               >
                 Add Approved Participant
+              </Button>
+            </Stack>
+          </form>
+        </Grid>
+        <Grid item>
+          <Typography variant="h5" component="h2" color={"hotpink"}>
+            Complete Challenge
+          </Typography>
+          <form onSubmit={setChallengComplete}>
+            <Stack mt={1} spacing={2}>
+              <TextField
+                inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+                style={{ width: "400px", margin: "5px" }}
+                sx={{
+                  fieldset: {
+                    borderColor: "hotpink",
+                  },
+                  bgcolor: "white",
+                }}
+                name="challengeId"
+                label="Challenge ID"
+                variant="filled"
+                error={challengCompleteError ? true : false}
+                helperText={challengCompleteError}
+              />
+              <Button
+                style={{ width: "400px", margin: "5px" }}
+                type={"submit"}
+                variant="contained"
+                color="primary"
+              >
+                Add Approved Participant
+              </Button>
+            </Stack>
+          </form>
+        </Grid>
+        <Grid item>
+          <Typography variant="h5" component="h2" color={"hotpink"}>
+            Approve Challenge
+          </Typography>
+          <form onSubmit={approveChallenge}>
+            <Stack mt={1} spacing={2}>
+              <TextField
+                style={{ width: "400px", margin: "5px" }}
+                sx={{
+                  fieldset: {
+                    borderColor: "hotpink",
+                  },
+                  bgcolor: "white",
+                }}
+                name="participantAddress"
+                label="Participant Wallet Address"
+                variant="filled"
+              />
+              <TextField
+                inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+                style={{ width: "400px", margin: "5px" }}
+                sx={{
+                  fieldset: {
+                    borderColor: "hotpink",
+                  },
+                  bgcolor: "white",
+                }}
+                name="challengeId"
+                label="Challenge ID"
+                variant="filled"
+                error={challengCompleteError ? true : false}
+                helperText={challengCompleteError}
+              />
+              <Button
+                style={{ width: "400px", margin: "5px" }}
+                type={"submit"}
+                variant="contained"
+                color="primary"
+              >
+                Approve Challenge
               </Button>
             </Stack>
           </form>

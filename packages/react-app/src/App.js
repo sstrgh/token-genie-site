@@ -28,7 +28,7 @@ function App() {
     console.log(show);
   }
   return (
-      <Grid xs={12}>
+      <Grid>
         <TKAppBar
             challenges={challenges}
             setChallenges={setChallenges}
