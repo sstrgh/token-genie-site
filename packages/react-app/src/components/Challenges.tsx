@@ -1,16 +1,15 @@
-import { Stack, TextareaAutosize, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { Item } from "../components/Item";
 import { Button } from "../components";
 import TextField from "@mui/material/TextField";
 import { ethers } from "ethers";
 import challenges from "../challenges.json";
-import React, { useEffect, useState } from "react";
-import { shortenAddress, useEthers, useLookupAddress } from "@usedapp/core";
-import { StartSharp } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { useEthers } from "@usedapp/core";
 
 export const Challenges = () => {
-  const { account, activateBrowserWallet, deactivate, error } = useEthers();
+  const { account } = useEthers();
   const [challengeData, setChallengeData] = useState<any[]>([]);
   const [participatingChallengeData, setParticipatingChallengeData] = useState<
     any[]
@@ -19,6 +18,7 @@ export const Challenges = () => {
   const contractAddress = "0xE0fbFD3110bB285eF6F38982EEF15E825Ad3d629";
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
+
   const contract = new ethers.Contract(contractAddress, challenges.abi, signer);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export const Challenges = () => {
     }
 
     getMyChallenges(account);
-  }, []);
+  }, [account, challengeData]);
 
   useEffect(() => {
     function addParticipatingChallenge(id: any, stars: any, description: any) {
@@ -91,7 +91,7 @@ export const Challenges = () => {
       }
     }
     getMyParticipatingChallenges(account);
-  }, []);
+  }, [account,contract]);
 
   const setHandler = (event: any) => {
     event.preventDefault();
@@ -334,8 +334,8 @@ export const Challenges = () => {
                 name="challengeId"
                 label="Challenge ID"
                 variant="filled"
-                error={challengCompleteError ? true : false}
-                helperText={challengCompleteError}
+                error={approveChallengeError ? true : false}
+                helperText={approveChallengeError}
               />
               <Button
                 style={{ width: "400px", margin: "5px" }}

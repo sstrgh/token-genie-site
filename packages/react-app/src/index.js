@@ -7,7 +7,6 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { DAppProvider, Mainnet } from "@usedapp/core";
 import React from "react";
 import ReactDOM from "react-dom";
-import Grid from "@mui/material/Grid";
 
 import App from "./App";
 
