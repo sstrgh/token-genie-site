@@ -299,7 +299,7 @@ export const Challenges = () => {
                 variant="contained"
                 color="primary"
               >
-                Add Approved Participant
+                Complete Challenge
               </Button>
             </Stack>
           </form>
